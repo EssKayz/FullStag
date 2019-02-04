@@ -1,16 +1,26 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Numbers from './Numbers'
 
+import axios from 'axios'
+
 const App = () => {
-    const [persons, setPersons] = useState([
-        { name: 'Arto Hellas', number: '040-123456' },
-        { name: 'Martti Tienari', number: '040-123456' },
-        { name: 'Arto Järvinen', number: '040-123456' },
-        { name: 'Lea Kutvonen', number: '040-123456' }
-    ])
+    const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [searchName, setSearchName] = useState('')
     const [newNumber, setNewNumber] = useState('')
+
+    const hook = () => {
+        console.log('effect')
+        axios
+            .get('http://localhost:3001/persons')
+            .then(response => {
+                console.log('promise fulfilled')
+                setPersons(response.data)
+            })
+    }
+
+    useEffect(hook, [])
+
 
     const addNewName = (event) => {
         event.preventDefault()
@@ -46,10 +56,10 @@ const App = () => {
 
             <h2>Puhelinluettelo</h2>
             <h3>lisää uusi</h3>
-            <AddPersonForm 
-                addNewName={addNewName} 
-                    handleNameChange={handleNameChange} newName={newName}
-                    handleNumberChange={handleNumberChange} newNumber={newNumber} />
+            <AddPersonForm
+                addNewName={addNewName}
+                handleNameChange={handleNameChange} newName={newName}
+                handleNumberChange={handleNumberChange} newNumber={newNumber} />
             <h2>Numerot</h2>
             <Numbers ppl={persons} searchName={searchName} />
         </div>
