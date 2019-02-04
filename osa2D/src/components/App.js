@@ -34,7 +34,7 @@ const App = () => {
                 setMessageStyle('error')
                 setMessage(`${props.name} was already removed`);
                 setTimeout(() => { setMessage(null) }, 3000)
-            })
+            }).then(res => { hook(); })
     }
 
     const addNewName = (event) => {
@@ -55,7 +55,7 @@ const App = () => {
                         setMessageStyle('error')
                         setMessage(`${newp.name} was already removed`);
                         setTimeout(() => { setMessage(null) }, 3000)
-                    })
+                    }).then(res => { hook(); })
             }
         } else {
             personService.create(newp)
