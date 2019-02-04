@@ -51,7 +51,11 @@ const App = () => {
         if (xd !== undefined) {
             if (window.confirm(`${newName} is already on the list, do you want to replace with new number?`)) {
                 personService.update(xd.id, newp)
-                    .then(res => { hook(); }).catch(error => {
+                    .then(res => {
+                        hook();
+                        setMessage(`${newp.name}'s number was edited`)
+                        setTimeout(() => { setMessage(null) }, 3000)
+                    }).catch(error => {
                         setMessageStyle('error')
                         setMessage(`${newp.name} was already removed`);
                         setTimeout(() => { setMessage(null) }, 3000)
