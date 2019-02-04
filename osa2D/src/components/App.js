@@ -8,6 +8,7 @@ const App = () => {
     const [searchName, setSearchName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [messageBox, setMessage] = useState(null)
+    const [messageBoxStyle, setMessageStyle] = useState(null)
 
     const hook = () => {
         personService.getAll()
@@ -21,6 +22,7 @@ const App = () => {
     useEffect(hook, [])
 
     const rem = (props) => {
+        setMessageStyle('message')
         console.log(props)
         personService.delete(props.id)
             .then(res => { hook(); })
@@ -28,11 +30,16 @@ const App = () => {
                 console.log(props)
                 setMessage(`Removed ${props.name}`);
                 setTimeout(() => { setMessage(null) }, 3000)
+            }).catch(error => {
+                setMessageStyle('error')
+                setMessage(`${props.name} was already removed`);
+                setTimeout(() => { setMessage(null) }, 3000)
             })
     }
 
     const addNewName = (event) => {
         event.preventDefault()
+        setMessageStyle('message')
         console.log('nappia painettu', event.target)
 
         const newp = {
@@ -40,8 +47,16 @@ const App = () => {
             number: newNumber
         }
 
-        if (persons.filter(i => i.name === newp.name).length > 0) {
-            alert(`person ${newName} is already on the list`)
+        const xd = persons.find(i => i.name === newp.name)
+        if (xd !== undefined) {
+            if (window.confirm(`${newName} is already on the list, do you want to replace with new number?`)) {
+                personService.update(xd.id, newp)
+                    .then(res => { hook(); }).catch(error => {
+                        setMessageStyle('error')
+                        setMessage(`${newp.name} was already removed`);
+                        setTimeout(() => { setMessage(null) }, 3000)
+                    })
+            }
         } else {
             personService.create(newp)
                 .then(res => { hook(); })
@@ -67,7 +82,7 @@ const App = () => {
     return (
         <div>
             <h2>Puhelinluettelo</h2>
-            <Notification message={messageBox} />
+            <Notification message={messageBox} style={messageBoxStyle} />
             <Filter event={handleSearchChange} inpVal={searchName} />
             <h3>lisää uusi</h3>
 
@@ -82,13 +97,13 @@ const App = () => {
     )
 }
 
-const Notification = ({ message }) => {
+const Notification = ({ message, style }) => {
     if (message === null) {
         return null
     }
 
     return (
-        <div className="message">
+        <div className={style}>
             {message}
         </div>
     )
